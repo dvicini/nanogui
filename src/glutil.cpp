@@ -343,43 +343,37 @@ void GLUniformBuffer::update(const std::vector<uint8_t> &data) {
 void GLFramebuffer::init(const Vector2i &size, int nSamples) {
     mSize = size;
     mSamples = nSamples;
-
-    glGenRenderbuffers(1, &mColor);
-    glBindRenderbuffer(GL_RENDERBUFFER, mColor);
-
-    if (nSamples <= 1)
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, size.x(), size.y());
-    else
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_RGBA8, size.x(), size.y());
-
-    glGenRenderbuffers(1, &mDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, mDepth);
-
-    if (nSamples <= 1)
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, size.x(), size.y());
-    else
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, size.x(), size.y());
-
     glGenFramebuffers(1, &mFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mColor);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepth);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepth);
+	glGenTextures(1, &mColor);
+	glBindTexture(GL_TEXTURE_2D, mColor);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size.x(), size.y(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mColor, 0);
+
+	glGenTextures(1, &mDepth);
+	glBindTexture(GL_TEXTURE_2D, mDepth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, size.x(), size.y(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mDepth, 0);  
 
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE)
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << status << std::endl;
         throw std::runtime_error("Could not create framebuffer object!");
-
+    }
     release();
 }
 
 void GLFramebuffer::free() {
-    glDeleteRenderbuffers(1, &mColor);
-    glDeleteRenderbuffers(1, &mDepth);
+    glDeleteTextures(1, &mColor);
+    glDeleteTextures(1, &mDepth);
     mColor = mDepth = 0;
 }
 

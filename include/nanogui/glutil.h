@@ -508,6 +508,11 @@ public:
 
     /// Quick and dirty method to write a TGA (32bpp RGBA) file of the framebuffer contents for debugging
     void downloadTGA(const std::string &filename);
+
+    /// Return the depth texture
+    GLuint depth() const { return mDepth; };
+    /// Return the color texture
+    GLuint color() const { return mColor; };
 protected:
     GLuint mFramebuffer, mDepth, mColor;
     Vector2i mSize;

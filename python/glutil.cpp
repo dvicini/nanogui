@@ -147,6 +147,20 @@ void register_glutil(py::module &m) {
         .def_readonly("size", &GLShader::Buffer::size, D(GLShader, Buffer, size))
         .def_readonly("version", &GLShader::Buffer::version, D(GLShader, Buffer, version));
 
+
+    py::class_<GLFramebuffer>(m, "GLFramebuffer", D(GLFramebuffer))
+        .def(py::init<>())
+        .def("init", &GLFramebuffer::init)
+        .def("free", &GLFramebuffer::free)
+        .def("bind", &GLFramebuffer::bind)
+        .def("release", &GLFramebuffer::release)
+        .def("blit", &GLFramebuffer::blit)
+        .def("ready", &GLFramebuffer::ready)
+        .def("samples", &GLFramebuffer::samples)
+        .def("downloadTGA", &GLFramebuffer::downloadTGA)
+        .def("depth", &GLFramebuffer::depth)
+        .def("color", &GLFramebuffer::color);
+
     py::class_<Arcball>(m, "Arcball", D(Arcball))
         .def(py::init<float>(), py::arg("speedFactor") = 2.f, D(Arcball, Arcball))
         .def(py::init<const Quaternionf &>(), D(Arcball, Arcball, 2))
