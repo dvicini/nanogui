@@ -442,7 +442,11 @@ if (NANOGUI_BUILD_PYTHON)
 
   # Try to autodetect Python (can be overridden manually if needed)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
-  set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
+  # set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
+
+  #TODO: Delio: Removed python 3.7 here to build against 3.6 virtual env (this is a bit hacky but it works for now...)
+  set(Python_ADDITIONAL_VERSIONS 3.6 3.5 3.4)
+
   find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
